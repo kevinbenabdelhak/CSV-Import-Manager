@@ -18,81 +18,69 @@ function gestionnaire_import_csv_traiter_import_csv() {
 add_action('admin_post_importer_csv', 'gestionnaire_import_csv_traiter_import_csv');
 
 function gestionnaire_import_csv_processus_csv($fichier_csv, $type_contenu, $mapping) {
-    if (($handle = fopen($fichier_csv, 'r')) !== FALSE) {
-       
-        $header = fgetcsv($handle);
-        
+    $posts = []; 
 
+    if (($handle = fopen($fichier_csv, 'r')) !== FALSE) {
+     
+        $header = fgetcsv($handle);
         $header = array_filter($header, function($value) {
             return !is_null($value) && trim($value) !== '';
         });
 
-      
         if (empty($header)) {
             fclose($handle);
             return; 
         }
 
+        $last_post_title = '';
+        $last_post_content = '';
+        $last_post_name = '';
+
         while (($data = fgetcsv($handle)) !== FALSE) {
           
-            $data = array_filter($data, function($value) {
-                return !is_null($value) && trim($value) !== '';
-            });
-
-           
             if (count($data) < count($header)) {
                 continue; 
             }
 
-            $post_data = [
-                'post_type'   => $type_contenu,
-                'post_status' => 'publish',
-                'post_title'  => '', 
-                'post_content' => '', 
+            $post_title = !empty($data[array_search('Titre', $header)]) ? $data[array_search('Titre', $header)] : $last_post_title;
+            $post_content = !empty($data[array_search('Contenu', $header)]) ? $data[array_search('Contenu', $header)] : $last_post_content;
+            $post_name = !empty($data[array_search('Slug', $header)]) ? $data[array_search('Slug', $header)] : $last_post_name;
+
+            $last_post_title = $post_title;
+            $last_post_content = $post_content;
+            $last_post_name = $post_name;
+
+            if (!isset($posts[$post_title])) {
+                $posts[$post_title] = [
+                    'post_type' => $type_contenu,
+                    'post_status' => 'publish',
+                    'post_title' => $post_title,
+                    'post_content' => $post_content,
+                    'post_name' => $post_name,
+                    'repeteur' => [] 
+                ];
+            }
+
+            $posts[$post_title]['repeteur'][] = [
+                'souschamp1' => $data[array_search('souschamp1', $header)],
+                'souschamp2' => $data[array_search('souschamp2', $header)],
             ];
-
-            $post_name = '';
-
-           
-            foreach ($header as $i => $col_name) {
-                if (isset($data[$i])) {
-                    switch ($mapping[$col_name]) {
-                        case 'post_title':
-                            $post_data['post_title'] = $data[$i];
-                            break;
-                        case 'post_content':
-                            $post_data['post_content'] = $data[$i];
-                            break;
-                        case 'post_name':
-                            $post_name = $data[$i];
-                            break;
-                    }
-                }
-            }
-
-           
-            $post_id = wp_insert_post($post_data);
-
-            if ($post_id) {
-                
-                if (!empty($post_name)) {
-                    $updated_post_data = [
-                        'ID' => $post_id,
-                        'post_name' => sanitize_title($post_name),
-                    ];
-                    wp_update_post($updated_post_data);
-                }
-
-               
-                if (function_exists('update_field')) {
-                    foreach ($header as $i => $col_name) {
-                        if (strpos($mapping[$col_name], 'post_') === false) {
-                            update_field($mapping[$col_name], $data[$i], $post_id);
-                        }
-                    }
-                }
-            }
         }
         fclose($handle);
+    }
+
+    foreach ($posts as $post_data) {
+        $post_id = wp_insert_post([
+            'post_type' => $post_data['post_type'],
+            'post_status' => $post_data['post_status'],
+            'post_title' => $post_data['post_title'],
+            'post_content' => $post_data['post_content'],
+            'post_name' => $post_data['post_name'],
+        ]);
+
+       
+        if ($post_id && function_exists('update_field')) {
+            update_field('repeteur', $post_data['repeteur'], $post_id);
+        }
     }
 }

@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
 
         if (file && post_type) {
             get_acf_fields(post_type).done(function(response) {
-             var acfFields = [];
+                var acfFields = [];
                 try {
                     acfFields = JSON.parse(response);
                 } catch (e) {
@@ -35,10 +35,8 @@ jQuery(document).ready(function($) {
 
                         var mappingHtml = '<table class="form-table"><tbody>';
                         for (var i = 0; i < headers.length; i++) {
-                            // Ne pas afficher les colonnes vides
-                            if (headers[i].trim() === "") {
-                                continue;
-                            }
+                            if (headers[i].trim() === "") continue;
+
                             mappingHtml += '<tr>';
                             mappingHtml += '<th>' + headers[i].trim() + '</th>';
                             mappingHtml += '<td><select name="mapping[' + headers[i].trim() + ']">';
@@ -46,8 +44,14 @@ jQuery(document).ready(function($) {
                             mappingHtml += '<option value="post_content">' + csvImportManagerTranslations.contenu + '</option>';
                             mappingHtml += '<option value="post_name">' + csvImportManagerTranslations.slug + '</option>';
 
+                            // Ajout de champs ACF
                             for (var field of acfFields) {
-                                mappingHtml += '<option value="' + field.key + '">' + field.label + '</option>';
+                                mappingHtml += '<option value="' + field.name + '">' + field.label + '</option>';
+
+                                // Ajouter l'option pour le champ répéteur uniquement si elle n'a pas été ajoutée
+                                if (field.name === 'repeteur' && !mappingHtml.includes('value="repeteur"')) {
+                                    mappingHtml += '<option value="repeteur">' + field.label + ' (Répéteur)' + '</option>';
+                                }
                             }
 
                             mappingHtml += '</select></td>';

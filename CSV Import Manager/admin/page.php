@@ -20,7 +20,7 @@ function gestionnaire_import_csv_page_admin() {
                     <td><input type="file" name="fichier_csv" id="fichier_csv" required></td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="type_contenu"><?php esc_html_e('Type de Contenu', 'csv-import-manager'); ?></label></th>
+                    <th scope="row"><label for="type_contenu"><?php esc_html_e('Type de contenu', 'csv-import-manager'); ?></label></th>
                     <td>
                         <select name="type_contenu" id="type_contenu">
                             <?php
@@ -33,7 +33,7 @@ function gestionnaire_import_csv_page_admin() {
                     </td>
                 </tr>
             </table>
-            <h2 id="mapping_colonnes_title" style="display:none;"><?php esc_html_e('Mapper les Colonnes CSV aux Champs', 'csv-import-manager'); ?></h2>
+            <h2 id="mapping_colonnes_title" style="display:none;"><?php esc_html_e('Lier les colonnes CSV', 'csv-import-manager'); ?></h2>
             <div id="mapping_colonnes_csv" style="display:none;"></div>
             <button type="submit" class="button button-primary" id="import_button" style="display:none;"><?php esc_html_e('Importer', 'csv-import-manager'); ?></button>
         </form>

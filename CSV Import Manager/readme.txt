@@ -45,6 +45,10 @@ CSV Import Manager simplifie l'importation de données provenant de fichiers CSV
 
 == Changelog ==
 
+
+= 1.1 =
+* Mappage des champs répéteurs ACF (indiquez le même noms de sous-champ en titre de colonne + créer une nouvelle ligne pour un deuxième champ, etc...)
+
 = 1.0 =
 * Première version du plugin.
 * Importation initiale des données CSV.

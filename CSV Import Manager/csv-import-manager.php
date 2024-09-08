@@ -3,7 +3,7 @@
  * Plugin Name: CSV Import Manager
  * Plugin URI: https://kevin-benabdelhak.fr/plugins/csv-import-manager/
  * Description: CSV Import Manager est un plugin WordPress pratique pour créer des publications en intégrant les données d'un CSV dans des champs personnalisées.
- * Version: 1.0
+ * Version: 1.1
  * Author: Kevin Benabdelhak
  * Author URI: https://kevin-benabdelhak.fr/
  * Text Domain: csv-import-manager
